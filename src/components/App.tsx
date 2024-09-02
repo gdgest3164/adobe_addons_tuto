@@ -32,12 +32,17 @@ interface GridProps {
     columnColor: string;
     rowColor: string;
 }
-
 interface PageMetadata {
+    hasPremiumContent: boolean;
+    hasTemporalContent: boolean;
     id: string;
+    isPrintReady?: boolean;
+    pixelsPerInch: number;
+    size: {
+        height: number;
+        width: number;
+    };
     title: string;
-    width: number;
-    height: number;
 }
 
 const App = ({ addOnUISdk }) => {
@@ -63,12 +68,8 @@ const App = ({ addOnUISdk }) => {
                     throw new Error("SDK가 올바르게 초기화되지 않았습니다.");
                 }
 
-                // 올바른 range 설정
                 const options = {
-                    range: {
-                        start: 0,
-                        end: 1, // 페이지 범위를 숫자로 지정
-                    }
+                    range: addOnUISdk.constants.Range.currentPage
                 };
 
                 const metadata = await addOnUISdk.app.document.getPagesMetadata(options);
@@ -98,39 +99,31 @@ const App = ({ addOnUISdk }) => {
     //     return rect;
     // };
 
-    // const addRows = (props:AddRows) => {
-    //     const {rowsNumber, gutter, color} = props;
-    //
-    //     let currentNode = editor.context.insertionParent;
-    //     let currentNode2 = null;
-    //     let page = null;
-    //
-    //     while(currentNode){
-    //         if(currentNode2 ? currentNode2.type === constants.SceneNodeType.page : currentNode.type === constants.SceneNodeType.page){
-    //             page = currentNode;
-    //             break;
-    //         }
-    //         currentNode2 = currentNode.parent;
-    //     }
-    //
-    //     const rowHeight = (page.height - (rowsNumber + 1) * gutter) / rowsNumber;
-    //     var rowsRect = [];
-    //     for(let i =0; i< rowsNumber; i ++){
-    //         const r = createRect({ width: `${page.width}`, height: `${rowHeight}`, color });
-    //         r.width = page.width;
-    //         r.height = rowHeight;
-    //         r.translation = { x : 0, y : gutter + (gutter+rowHeight) * i };
-    //         rowsRect.push(r);
-    //     }
-    //
-    //     rowsRect.forEach((r,i)=>{page.artboards.first.children.append(r)});
-    //
-    //     const rowsGroup = editor.createGroup();
-    //     page.artboards.first.children.append(rowsGroup);
-    //     rowsGroup.children.append(...rowsRect);
-    //     rowsGroup.blendMode = constants.BlendMode.multiply;
-    //     return rowsGroup;
-    // };
+    const addRows = (props:AddRows) => {
+        const {rowsNumber, gutter, color} = props;
+
+        const rowHeight = (pageMetadata.size.height - (rowsNumber + 1) * gutter) / rowsNumber;
+        var rowsRect = [];
+        debugger
+
+        for(let i =0; i< rowsNumber; i ++){
+
+        //     const r = createRect({ width: `${pageMetadata.size.width}`, height: `${rowHeight}`, color });
+        //     r.width = pageMetadata.size.width;
+        //     r.height = rowHeight;
+        //     r.translation = { x : 0, y : gutter + (gutter+rowHeight) * i };
+        //     rowsRect.push(r);
+        }
+
+
+        // rowsRect.forEach((r,i)=>{page.artboards.first.children.append(r)});
+        //
+        // const rowsGroup = editor.createGroup();
+        // page.artboards.first.children.append(rowsGroup);
+        // rowsGroup.children.append(...rowsRect);
+        // rowsGroup.blendMode = constants.BlendMode.multiply;
+        // return rowsGroup;
+    };
 
     // const addColumns =(props:AddColumnsProps) => {
     //     const {columsNumber, gutter, color} = props;
@@ -170,6 +163,7 @@ const App = ({ addOnUISdk }) => {
         const {rows, columns, gutter, columnColor, rowColor} = props;
         console.log(props);
 
+        console.log(pageMetadata);
 
         // debugger
         // const pagesMetadata = await addOnUISdk.app.document.getPagesMetadata();
@@ -190,7 +184,7 @@ const App = ({ addOnUISdk }) => {
         //     currentNode2 = currentNode.parent;
         // }
 
-        // const rowGroup = addRows({rowsNumber:rows, gutter: gutter, color:rowColor});
+        const rowGroup = addRows({rowsNumber:rows, gutter: gutter, color:rowColor});
         // const colGroup = addColumns({columsNumber:columns, gutter:gutter, color:columnColor});
         //
         // const gridGroup = editor.createGroup();
