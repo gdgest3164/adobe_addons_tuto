@@ -1,0 +1,21 @@
+{
+    "testId": "05ebd676-779c-4887-9349-675831f7482d",
+    "name": "Add Tuto",
+    "version": "1.0.0",
+    "manifestVersion": 2,
+    "requirements": {
+        "apps": [
+            {
+                "name": "Express",
+                "apiVersion": 1
+            }
+        ]
+    },
+    "entryPoints": [
+        {
+            "type": "panel",
+            "id": "panel1",
+            "main": "index.html"
+        }
+    ]
+}
