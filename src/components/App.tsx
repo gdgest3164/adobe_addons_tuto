@@ -9,6 +9,8 @@ import {FieldLabel} from '@swc-react/field-label';
 import {Slider} from '@swc-react/slider';
 import {Swatch} from '@swc-react/swatch';
 import {NumberField} from '@swc-react/number-field';
+import { AddOnSDKAPI } from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
+import {editor} from "@adobe/ccweb-add-on-sdk-types/sandbox/express-document-sdk";
 
 interface CreateProps {
     width: string,
@@ -36,8 +38,8 @@ interface PageMetadata {
     hasPremiumContent: boolean;
     hasTemporalContent: boolean;
     id: string;
-    isPrintReady?: boolean;
-    pixelsPerInch: number;
+    isPrintReady?: boolean | undefined;
+    pixelsPerInch?: number;
     size: {
         height: number;
         width: number;
@@ -45,8 +47,9 @@ interface PageMetadata {
     title: string;
 }
 
-const App = ({ addOnUISdk }) => {
+const App = ({ addOnUISdk }: { addOnUISdk: AddOnSDKAPI }) => {
     const [pageMetadata, setPageMetadata] = useState<PageMetadata | null>(null);
+
     const rowsColorPickerRef = useRef<HTMLInputElement>(null);
     const colsColorPickerRef = useRef<HTMLInputElement>(null);
 
@@ -59,8 +62,7 @@ const App = ({ addOnUISdk }) => {
     const [rowsColorPicker, setRowsColorPicker] = useState<string>("#ccccff");
     const [rowsColorSwatch, setRowsColorSwatch] = useState<string>("#ccccff");
 
-    let gridRef = null;
-
+    // SDK 초기화
     useEffect(() => {
         const fetchPageMetadata = async () => {
             try {
@@ -104,17 +106,24 @@ const App = ({ addOnUISdk }) => {
 
         const rowHeight = (pageMetadata.size.height - (rowsNumber + 1) * gutter) / rowsNumber;
         var rowsRect = [];
-        debugger
 
-        for(let i =0; i< rowsNumber; i ++){
+        for (let i = 0; i < rowsNumber; i++) {
+            // let currentNode = editor.context.insertionParent;
+            const yPos = i * (rowHeight + gutter) + gutter;
 
-        //     const r = createRect({ width: `${pageMetadata.size.width}`, height: `${rowHeight}`, color });
-        //     r.width = pageMetadata.size.width;
-        //     r.height = rowHeight;
-        //     r.translation = { x : 0, y : gutter + (gutter+rowHeight) * i };
-        //     rowsRect.push(r);
+            const rect = {
+                x: 0,
+                y: yPos,
+                width: pageMetadata.size.width,
+                height: rowHeight,
+                fillColor: color
+            };
+
+            rowsRect.push(rect);
         }
 
+        console.log(rowsRect);
+        debugger
 
         // rowsRect.forEach((r,i)=>{page.artboards.first.children.append(r)});
         //
@@ -184,7 +193,7 @@ const App = ({ addOnUISdk }) => {
         //     currentNode2 = currentNode.parent;
         // }
 
-        const rowGroup = addRows({rowsNumber:rows, gutter: gutter, color:rowColor});
+        addRows({rowsNumber:rows, gutter: gutter, color:rowColor});
         // const colGroup = addColumns({columsNumber:columns, gutter:gutter, color:columnColor});
         //
         // const gridGroup = editor.createGroup();
